@@ -4,25 +4,29 @@ const fs = require('fs'),
 
 const pathFolder = path.join(`${__dirname}/secret-folder`);
 
-fs.readdir(pathFolder, (err, files) => {
+
+fs.readdir(pathFolder, { withFileTypes: true }, (err, files) => {
   if(err) throw err; 
 
   files.forEach( file => {
-    const pathFile = `${pathFolder}\\${file}`;
-    if (fs.lstatSync(pathFile).isFile()) {
-      stdout.write(`${path.basename(pathFile, path.extname(pathFile))} - ${path.extname(pathFile).slice(1)} - ${fs.statSync(pathFile).size / 1024} kb\n`);
-    } else if (fs.lstatSync(pathFile).isDirectory()) {
-      fs.readdir(pathFile, (err, filesDir) => {
-        if(err) throw err; 
+    const pathFile = `${pathFolder}\\${file.name}`;
 
-        filesDir.forEach( fileDir => {
-          const pathFileDir = `${pathFile}\\${fileDir}`;
-          if (fs.lstatSync(pathFileDir).isFile()) {
-            if (path.basename(pathFileDir) === '.gitkeep') {
-              stdout.write(`${path.extname(pathFileDir)} - ${path.basename(pathFileDir, path.extname(pathFileDir)).slice(1)} - ${fs.statSync(pathFileDir).size / 1024} kb\n`);
-            } else {
-              stdout.write(`${path.basename(pathFileDir, path.extname(pathFileDir))} - ${path.extname(pathFileDir).slice(1)} - ${fs.statSync(pathFileDir).size / 1024} kb\n`);
-            }
+    if (file.isFile()) {
+      fs.stat(pathFile, (err, stats) => {
+        if (err) throw err;
+        stdout.write(`${file.name.split('.')[0]} - ${path.extname(file.name).slice(1)} - ${+stats.size / 1000}kb \n`);
+      });
+    } else if (file.isDirectory()) {
+      fs.readdir(pathFile, { withFileTypes: true }, (err, files) => {
+      
+        if (err) throw err;
+        files.forEach( file => {
+          
+          if (file.isFile()) {
+            fs.stat(pathFile, (err, stats) => {
+              if (err) throw err;
+              stdout.write(` ${path.extname(file.name)} - ${file.name.slice(1)} - ${+stats.size / 1000}kb \n`);
+            });
           }
         });
       });
