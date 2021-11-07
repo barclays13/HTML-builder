@@ -7,7 +7,7 @@ const writeableStream = fs.createWriteStream(pathText);
 
 stdout.write('Hello everyone, enter your message...\n');
 stdin.on('data', data => {
-  if (data.toString() == 'exit') process.exit();
+  if (data.toString() == 'exit\r\n') process.exit();
   writeableStream.write(data);
 });
 
