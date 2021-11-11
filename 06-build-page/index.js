@@ -21,35 +21,53 @@ const baseHtml = fs.createReadStream(path.join(__dirname, 'template.html')),
 baseHtml.pipe(newHtml);
 
 fs.readFile(pathIndex, 'utf-8',( err , data ) => {
+  
   if (err) throw err;
-  fs.readFile(path.join(pathComponents, 'header.html'), 'utf-8', ( err, dataHeader ) => {
+
+  fs.readdir(pathComponents, ( err, components ) => {
     if (err) throw err;
-    data = data.replace('{{header}}', dataHeader);
-    fs.writeFile(pathIndex, data, 'utf-8', err => {
-      if (err) throw err;
+    components.reverse().forEach( item => {
+      fs.readFile(path.join(pathComponents, item), 'utf-8',( err, dataItem ) => {
+        if (err) throw err;
+        const name = item.split('.').slice(0, -1).join('.');
+        data = data.replace(`{{${name}}}`, dataItem);
+        fs.writeFile(pathIndex, data, 'utf-8', err => {
+          if (err) throw err;
+        });
+      });
     });
+
   });
-  fs.readFile(path.join(pathComponents, 'articles.html'), 'utf-8', ( err, dataArticle ) => {
-    if (err) throw err;
-    data = data.replace('{{articles}}', dataArticle);
-    fs.writeFile(pathIndex, data, 'utf-8', err => {
-      if (err) throw err;
-    });
-  });
-  fs.readFile(path.join(pathComponents, 'footer.html'), 'utf-8', ( err, dataFooter ) => {
-    if (err) throw err;
-    data = data.replace('{{footer}}', dataFooter);
-    fs.writeFile(pathIndex, data, 'utf-8', err => {
-      if (err) throw err;
-    });
-  });
-  fs.readFile(path.join(pathComponents, 'about.html'), 'utf-8', ( err, dataFooter ) => {
-    if (err) throw err;
-    data = data.replace('{{about}}', dataFooter);
-    fs.writeFile(pathIndex, data, 'utf-8', err => {
-      if (err) throw err;
-    });
-  });
+
+  // fs.readFile(path.join(pathComponents, 'header.html'), 'utf-8', ( err, dataHeader ) => {
+  //   if (err) throw err;
+  //   data = data.replace('{{header}}', dataHeader);
+  //   fs.writeFile(pathIndex, data, 'utf-8', err => {
+  //     if (err) throw err;
+  //   });
+  // });
+  // fs.readFile(path.join(pathComponents, 'articles.html'), 'utf-8', ( err, dataArticle ) => {
+  //   if (err) throw err;
+  //   data = data.replace('{{articles}}', dataArticle);
+  //   fs.writeFile(pathIndex, data, 'utf-8', err => {
+  //     if (err) throw err;
+  //   });
+  // });
+  // fs.readFile(path.join(pathComponents, 'footer.html'), 'utf-8', ( err, dataFooter ) => {
+  //   if (err) throw err;
+  //   data = data.replace('{{footer}}', dataFooter);
+  //   fs.writeFile(pathIndex, data, 'utf-8', err => {
+  //     if (err) throw err;
+  //   });
+  // });
+
+  // fs.readFile(path.join(pathComponents, 'about.html'), 'utf-8', ( err, dataFooter ) => {
+  //   if (err) throw err;
+  //   data = data.replace('{{about}}', dataFooter);
+  //   fs.writeFile(pathIndex, data, 'utf-8', err => {
+  //     if (err) throw err;
+  //   });
+  // });
 });
 
 // copy assets
