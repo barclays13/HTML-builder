@@ -43,6 +43,13 @@ fs.readFile(pathIndex, 'utf-8',( err , data ) => {
       if (err) throw err;
     });
   });
+  fs.readFile(path.join(pathComponents, 'about.html'), 'utf-8', ( err, dataFooter ) => {
+    if (err) throw err;
+    data = data.replace('{{about}}', dataFooter);
+    fs.writeFile(pathIndex, data, 'utf-8', err => {
+      if (err) throw err;
+    });
+  });
 });
 
 // copy assets
